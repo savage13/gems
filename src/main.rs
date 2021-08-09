@@ -41,42 +41,41 @@ fn items_names() -> String {
     ITEMS.keys().cloned().collect::<Vec<_>>().join(" ")
 }
 
-fn help(full: bool) -> String {
+fn help(_full: bool) -> String {
     let keys = items_names();
-
+    /*
     if full {
         format!(
-            "Compute inventory value\
-  Known items: \"{:?} Verbose \" \
-  Examples:\
-     2 Amber 1 Flint 3 Ruby 4 Diamond\
-     Amber Amber Flint Ruby Ruby Ruby 4 Diamond\
-     a a f r r r 4 d\
-     2 A    F    3 R    4 D\
-     2 a  f 3 r 4 d verbose\
-\
-\
-  If verbose is specified, then an itemized receipt is produced\
-    otherwise only the total is reported\
-  Input is not case sensitive\
-\
-  Examples above should all preduce 2695 or with verbose\
-\
-2 amber: 60\
-1 flint: 5\
-3 ruby: 630\
-4 diamond: 2000\
---------------------\
-Total: 2695\
+            "Compute inventory value\n\
+  Known items: \"{} Verbose \" \n\
+  Examples:\n\
+     2 Amber 1 Flint 3 Ruby 4 Diamond\n\
+     Amber Amber Flint Ruby Ruby Ruby 4 Diamond\n\
+     a a f r r r 4 d 
+     2 a f 3 r 4 d verbose  
+\n\
+\n\
+  If verbose is specified, then an itemized receipt is produced\n\
+    otherwise only the total is reported\n\
+  Input is not case sensitive\n\
+\n\
+  Examples above should all preduce 2695 or with verbose\n\
+\n\
+2 amber: 60\n\
+1 flint: 5\n\
+3 ruby: 630\n\
+4 diamond: 2000\n\
+--------------------\n\
+Total: 2695\n\
 ",
             keys
         )
     } else {
-        format!(
-            "items \"{} verbose help\", example: 2 Amber Diamond or 2 a d",
-            keys
-        )
-    }
+     */
+    format!(
+        "items \"{} verbose help\", example: 2 Amber Diamond or 2 a d",
+        keys
+    )
 }
 
 fn is_help(s: &str) -> bool {
@@ -84,6 +83,11 @@ fn is_help(s: &str) -> bool {
 }
 fn is_verbose(s: &str) -> bool {
     s == "v" || s == "verbose"
+}
+
+#[get("/gems")]
+fn base() -> String {
+    help(true)
 }
 
 #[get("/gems/<input>")]
@@ -142,9 +146,8 @@ fn index(input: &str) -> String {
         let mut lines = vals.into_iter()
             .map(|(name, count)| format!("{:2} {:12} {}", count, name, item_value(&name) * count))
             .collect::<Vec<_>>();
-        lines.push(format!("--------------------"));
-        lines.push(format!("Total: {}", total));
-        lines.join("\n")
+        lines.push(format!("Total {}", total));
+        lines.join(" | ")
     } else {
         format!("{}", total)
     }
@@ -160,5 +163,5 @@ fn item_value(name: &str) -> i32 {
 #[launch]
 fn rocket() -> _ {
     let figment = rocket::Config::figment().merge(("port", 3000));
-    rocket::custom(figment).mount("/", routes![index])
+    rocket::custom(figment).mount("/", routes![index, base])
 }
