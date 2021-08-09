@@ -144,7 +144,7 @@ fn index(input: &str) -> String {
     // Output
     if verbose {
         let mut lines = vals.into_iter()
-            .map(|(name, count)| format!("{:2} {:12} {}", count, name, item_value(&name) * count))
+            .map(|(name, count)| format!("{} {} {}", count, name, item_value(&name) * count))
             .collect::<Vec<_>>();
         lines.push(format!("Total {}", total));
         lines.join(" | ")
